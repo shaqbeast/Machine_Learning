@@ -66,14 +66,14 @@ class EmbeddingMLP(nn.Module):
         return x1, x2, x3
 
 def clean_and_prepare(df, target_col, exclude_cols=[]):
-    df = df[df[target_col] != 'NaN'].copy()
+    df = df[df[target_col] != 'NaN'].copy() # need to remove portions where we have str(NaN) value
     df.dropna(axis=1, how='all', inplace=True)
-    df = df.loc[:, df.nunique() > 1]
+    df = df.loc[:, df.nunique() > 1] # drop columns with only 1 unique value
     df.drop(columns=exclude_cols, errors='ignore', inplace=True)
-    categorical_cols = df.select_dtypes(include=['object']).columns.drop(target_col, errors='ignore')
-    df = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
+    categorical_cols = df.select_dtypes(include=['object']).columns.drop(target_col, errors='ignore')  # identify categorical columns
+    df = pd.get_dummies(df, columns=categorical_cols, drop_first=True) # use one-hot encoding (giving numerical values to categorical variables)
     for col in df.select_dtypes(include=[np.number]).columns:
-        df[col] = df[col].fillna(df[col].mean())
+        df[col] = df[col].fillna(df[col].mean()) # fill any remain NaN values with the mean
     return df
 
 def train_triplet_and_classify_with_gmm(df, target_col="disorder_subclass", exclude_cols=["genetic_disorder", "patient_id", "num"],

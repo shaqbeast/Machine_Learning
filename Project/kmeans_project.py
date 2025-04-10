@@ -8,16 +8,15 @@ import warnings
 import joblib
 
 def clean_and_prepare_for_kmeans(df, exclude_cols=["genetic_disorder", "patient_id", "num"]):
-    df = df.dropna(axis=1, how='all').copy()
-    df = df.loc[:, df.nunique() > 1]
+    df = df.dropna(axis=1, how='all').copy() # drop all NaN values 
+    df = df.loc[:, df.nunique() > 1] # drop columns with only 1 unique value (we don't need it cause it adds no variance in our dataset)
     df.drop(columns=exclude_cols, errors='ignore', inplace=True)
 
-    # One-hot encode object columns
     categorical_cols = df.select_dtypes(include=['object']).columns
     df = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
 
     for col in df.select_dtypes(include=[np.number]).columns:
-        df[col] = df[col].fillna(df[col].mean())
+        df[col] = df[col].fillna(df[col].mean()) # replace NaN with means
 
     return df
 
