@@ -17,7 +17,11 @@ def clean_and_prepare(df, target_col, exclude_cols=[], one_hot=False, return_lab
     df = df[df[target_col] != 'NaN'].copy()
     df.dropna(axis=1, how='all', inplace=True)
 
+<<<<<<< HEAD
     # Drop columns with only 1 unique value
+=======
+    # Drop columns with only 1 unique value (we don't need any columns that offer zero variance)
+>>>>>>> eeb1c0acfb37339587e1b811913c83a71aa9b1dc
     df = df.loc[:, df.nunique() > 1]
 
     # Drop explicitly excluded columns
